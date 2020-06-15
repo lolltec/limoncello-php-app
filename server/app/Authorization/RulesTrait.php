@@ -1,4 +1,6 @@
-<?php namespace App\Authorization;
+<?php declare (strict_types=1);
+
+namespace App\Authorization;
 
 use Limoncello\Application\Authorization\AuthorizationRulesTrait;
 use Limoncello\Auth\Contracts\Authorization\PolicyInformation\ContextInterface;

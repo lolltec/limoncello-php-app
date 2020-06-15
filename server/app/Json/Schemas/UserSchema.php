@@ -1,4 +1,6 @@
-<?php namespace App\Json\Schemas;
+<?php declare (strict_types=1);
+
+namespace App\Json\Schemas;
 
 use App\Data\Models\User as Model;
 
@@ -14,19 +16,16 @@ class UserSchema extends BaseSchema
     const MODEL = Model::class;
 
     /** Attribute name */
+    const ATTR_UUID = Model::FIELD_UUID;
+
+    /** Attribute name */
+    const ATTR_EMAIL = Model::FIELD_EMAIL;
+
+    /** Attribute name */
     const ATTR_FIRST_NAME = 'first-name';
 
     /** Attribute name */
     const ATTR_LAST_NAME = 'last-name';
-
-    /** Attribute name */
-    const ATTR_EMAIL = 'email';
-
-    /** Attribute name */
-    const ATTR_CREATED_AT = 'created-at';
-
-    /** Attribute name */
-    const ATTR_UPDATED_AT = 'updated-at';
 
     /** Virtual attribute name */
     const V_ATTR_PASSWORD = 'password';
@@ -41,7 +40,7 @@ class UserSchema extends BaseSchema
     const CAPTURE_NAME_PASSWORD_CONFIRMATION = self::V_ATTR_PASSWORD_CONFIRMATION;
 
     /** Relationship name */
-    const REL_ROLE = 'role';
+    const REL_ROLE = Model::REL_ROLE;
 
     /**
      * @inheritdoc
@@ -51,6 +50,7 @@ class UserSchema extends BaseSchema
         return [
             self::SCHEMA_ATTRIBUTES    => [
                 self::RESOURCE_ID     => Model::FIELD_ID,
+                self::ATTR_UUID       => Model::FIELD_UUID,
                 self::ATTR_FIRST_NAME => Model::FIELD_FIRST_NAME,
                 self::ATTR_LAST_NAME  => Model::FIELD_LAST_NAME,
                 self::ATTR_EMAIL      => Model::FIELD_EMAIL,

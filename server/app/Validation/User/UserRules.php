@@ -1,4 +1,6 @@
-<?php namespace App\Validation\User;
+<?php declare (strict_types=1);
+
+namespace App\Validation\User;
 
 use App\Data\Models\User as Model;
 use App\Json\Schemas\UserSchema as Schema;
@@ -23,13 +25,26 @@ final class UserRules extends BaseRules
     }
 
     /**
+     * @param bool $onUpdate
+     *
+     * @return RuleInterface
+     */
+    public static function uuid(bool $onUpdate = false): RuleInterface
+    {
+        $isUnique  = self::unique(Model::TABLE_NAME, Model::FIELD_UUID, $onUpdate === false ? null : Model::FIELD_ID);
+        $maxLength = Model::getAttributeLengths()[Model::FIELD_UUID];
+
+        return self::isUuid(self::stringLengthMax($maxLength, $isUnique));
+    }
+
+    /**
      * @return RuleInterface
      */
     public static function firstName(): RuleInterface
     {
         $maxLength = Model::getAttributeLengths()[Model::FIELD_FIRST_NAME];
 
-        return self::asSanitizedString(self::stringLengthBetween(1, $maxLength));
+        return self::asSanitizedString(self::stringLengthMax($maxLength));
     }
 
     /**
@@ -39,41 +54,27 @@ final class UserRules extends BaseRules
     {
         $maxLength = Model::getAttributeLengths()[Model::FIELD_LAST_NAME];
 
-        return self::asSanitizedString(self::stringLengthBetween(1, $maxLength));
+        return self::asSanitizedString(self::stringLengthMax($maxLength));
     }
 
     /**
+     * @param bool|null $onUpdate
+     *
      * @return RuleInterface
      */
-    public static function email(): RuleInterface
+    public static function email(bool $onUpdate = false): RuleInterface
     {
+        $isUnique  = self::unique(Model::TABLE_NAME, Model::FIELD_EMAIL, $onUpdate === false ? null : Model::FIELD_ID);
+        $likeEmail = self::filter(
+            FILTER_VALIDATE_EMAIL,
+            null,
+            ErrorCodes::IS_EMAIL,
+            Messages::IS_EMAIL,
+            $isUnique
+        );
         $maxLength = Model::getAttributeLengths()[Model::FIELD_EMAIL];
 
-        return self::isString(
-            self::stringLengthBetween(
-                1,
-                $maxLength,
-                self::filter(FILTER_VALIDATE_EMAIL, null, ErrorCodes::IS_EMAIL, Messages::IS_EMAIL)
-            )
-        );
-    }
-
-    /**
-     * @return RuleInterface
-     */
-    public static function uniqueEmail(): RuleInterface
-    {
-        // input value should be unique among user's emails but before that...
-        $isUniqueEmail = self::unique(Model::TABLE_NAME, Model::FIELD_EMAIL);
-        // ... it should at least look like email but before that...
-        $isLooksLikeEmail = self::filter(FILTER_VALIDATE_EMAIL, null, ErrorCodes::IS_EMAIL, Messages::IS_EMAIL, $isUniqueEmail);
-        // ... it should have length within the range but before that...
-        $maxLength  = Model::getAttributeLengths()[Model::FIELD_EMAIL];
-        $isLengthOk = self::stringLengthBetween(1, $maxLength, $isLooksLikeEmail);
-        // ... it should be string.
-        $theWholeThing = self::isString($isLengthOk);
-
-        return $theWholeThing;
+        return self::isString(self::stringLengthBetween(Model::MIN_EMAIL_LENGTH, $maxLength, $likeEmail));
     }
 
     /**

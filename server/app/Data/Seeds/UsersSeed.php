@@ -1,12 +1,13 @@
-<?php namespace App\Data\Seeds;
+<?php declare (strict_types=1);
+
+namespace App\Data\Seeds;
 
 use App\Data\Models\User as Model;
 use Doctrine\DBAL\DBALException;
-use Faker\Generator;
 use Limoncello\Contracts\Data\SeedInterface;
 use Limoncello\Crypt\Contracts\HasherInterface;
 use Limoncello\Data\Seeds\SeedTrait;
-use Psr\Container\ContainerInterface;
+use Ramsey\Uuid\UuidFactoryInterface;
 
 /**
  * @package App
@@ -15,9 +16,23 @@ class UsersSeed implements SeedInterface
 {
     use SeedTrait;
 
-    const NUMBER_OF_RECORDS = 6;
+    /** Default password */
+    const DEFAULT_PASSWORD = 'default_secret';
 
-    const DEFAULT_PASSWORD = 'secret';
+    /** User id */
+    const ID_ADMINISTRATOR = 1;
+    /** User email */
+    const USER_ADMINISTRATOR = 'administrator@local.ltd';
+
+    /** User id */
+    const ID_MODERATOR = 2;
+    /** User email */
+    const USER_MODERATOR = 'moderator@local.ltd';
+
+    /** User id */
+    const ID_USER = 3;
+    /** User email */
+    const USER_USER = 'user@local.ltd';
 
     /**
      * @inheritdoc
@@ -26,26 +41,36 @@ class UsersSeed implements SeedInterface
      */
     public function run(): void
     {
-        $this->seedModelsData(self::NUMBER_OF_RECORDS, Model::class, function (ContainerInterface $container) {
-            /** @var Generator $faker */
-            $faker = $container->get(Generator::class);
-            /** @var HasherInterface $hasher */
-            $hasher = $container->get(HasherInterface::class);
+        /** @var HasherInterface $uuidFactory */
+        /** @var UuidFactoryInterface $uuid */
+        $uuidFactory = $this->getContainer()->get(UuidFactoryInterface::class);
+        $hasher      = $this->getContainer()->get(HasherInterface::class);
 
-            $role = $faker->randomElement([
-                RolesSeed::ROLE_ADMIN,
-                RolesSeed::ROLE_MODERATOR,
-                RolesSeed::ROLE_USER,
-            ]);
+        $this->seedModelData(Model::class, [
+            Model::FIELD_ID            => self::ID_ADMINISTRATOR,
+            Model::FIELD_ID_ROLE       => RolesSeed::ROLE_ADMINISTRATOR,
+            Model::FIELD_UUID          => $uuidFactory->uuid4()->toString(),
+            Model::FIELD_EMAIL         => self::USER_ADMINISTRATOR,
+            Model::FIELD_PASSWORD_HASH => $hasher->hash(self::DEFAULT_PASSWORD),
+            Model::FIELD_CREATED_AT    => $this->now(),
+        ]);
 
-            return [
-                Model::FIELD_FIRST_NAME    => $faker->firstName,
-                Model::FIELD_LAST_NAME     => $faker->lastName,
-                Model::FIELD_EMAIL         => $faker->email,
-                Model::FIELD_ID_ROLE       => $role,
-                Model::FIELD_PASSWORD_HASH => $hasher->hash(self::DEFAULT_PASSWORD),
-                Model::FIELD_CREATED_AT    => $this->now(),
-            ];
-        });
+        $this->seedModelData(Model::class, [
+            Model::FIELD_ID            => self::ID_MODERATOR,
+            Model::FIELD_ID_ROLE       => RolesSeed::ROLE_MODERATOR,
+            Model::FIELD_UUID          => $uuidFactory->uuid4()->toString(),
+            Model::FIELD_EMAIL         => self::USER_MODERATOR,
+            Model::FIELD_PASSWORD_HASH => $hasher->hash(self::DEFAULT_PASSWORD),
+            Model::FIELD_CREATED_AT    => $this->now(),
+        ]);
+
+        $this->seedModelData(Model::class, [
+            Model::FIELD_ID            => self::ID_USER,
+            Model::FIELD_ID_ROLE       => RolesSeed::ROLE_USER,
+            Model::FIELD_UUID          => $uuidFactory->uuid4()->toString(),
+            Model::FIELD_EMAIL         => self::USER_USER,
+            Model::FIELD_PASSWORD_HASH => $hasher->hash(self::DEFAULT_PASSWORD),
+            Model::FIELD_CREATED_AT    => $this->now(),
+        ]);
     }
 }

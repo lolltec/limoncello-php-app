@@ -1,4 +1,6 @@
-<?php namespace App\Validation\Role;
+<?php declare (strict_types=1);
+
+namespace App\Validation\Role;
 
 use App\Data\Models\Role as Model;
 use App\Json\Schemas\RoleSchema as Schema;
@@ -21,24 +23,28 @@ final class RoleRules extends BaseRules
     }
 
     /**
+     * @param bool $onUpdate
+     *
      * @return RuleInterface
      */
-    public static function description(): RuleInterface
+    public static function uuid(bool $onUpdate = false): RuleInterface
     {
-        $maxLength = Model::getAttributeLengths()[Model::FIELD_DESCRIPTION];
+        $isUnique  = self::unique(Model::TABLE_NAME, Model::FIELD_UUID, $onUpdate === false ? null : Model::FIELD_ID);
+        $maxLength = Model::getAttributeLengths()[Model::FIELD_UUID];
 
-        return self::asSanitizedString(self::stringLengthBetween(1, $maxLength));
+        return self::isUuid(self::stringLengthMax($maxLength, $isUnique));
     }
 
     /**
+     * @param bool $onUpdate
+     *
      * @return RuleInterface
      */
-    public static function isUniqueRoleId(): RuleInterface
+    public static function name(bool $onUpdate = false): RuleInterface
     {
-        $maxLength = Model::getAttributeLengths()[Model::FIELD_ID];
+        $isUnique  = self::unique(Model::TABLE_NAME, Model::FIELD_NAME, $onUpdate === false ? null : Model::FIELD_ID);
+        $maxLength = Model::getAttributeLengths()[Model::FIELD_NAME];
 
-        return self::asSanitizedString(
-            self::stringLengthBetween(1, $maxLength, self::unique(Model::TABLE_NAME, Model::FIELD_ID))
-        );
+        return self::isString(self::stringLengthBetween(Model::MIN_NAME_LENGTH, $maxLength, $isUnique));
     }
 }

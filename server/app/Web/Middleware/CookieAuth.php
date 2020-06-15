@@ -1,4 +1,6 @@
-<?php namespace App\Web\Middleware;
+<?php declare (strict_types=1);
+
+namespace App\Web\Middleware;
 
 use Closure;
 use Limoncello\Contracts\Application\MiddlewareInterface;
@@ -29,7 +31,8 @@ final class CookieAuth implements MiddlewareInterface
         ServerRequestInterface $request,
         Closure $next,
         ContainerInterface $container
-    ): ResponseInterface {
+    ): ResponseInterface
+    {
         // if auth cookie given ...
         $cookies = $request->getCookieParams();
         if (array_key_exists(static::COOKIE_NAME, $cookies) === true &&

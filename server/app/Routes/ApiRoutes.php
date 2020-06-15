@@ -1,9 +1,12 @@
-<?php namespace App\Routes;
+<?php declare (strict_types=1);
+
+namespace App\Routes;
 
 use App\Json\Controllers\RolesController;
 use App\Json\Controllers\UsersController;
 use App\Json\Schemas\RoleSchema;
 use App\Json\Schemas\UserSchema;
+use App\Web\Middleware\CatchAllResponsesMiddleware;
 use Limoncello\Contracts\Application\RoutesConfiguratorInterface;
 use Limoncello\Contracts\Routing\GroupInterface;
 use Limoncello\Flute\Http\Traits\FluteRoutesTrait;
@@ -43,10 +46,24 @@ class ApiRoutes implements RoutesConfiguratorInterface
                     FluteContainerConfigurator::CONFIGURE_EXCEPTION_HANDLER,
                 ]);
 
-                self::apiController($routes, UserSchema::TYPE, UsersController::class);
-
                 self::apiController($routes, RoleSchema::TYPE, RolesController::class);
-                self::relationship($routes, RoleSchema::TYPE, RoleSchema::REL_USERS, RolesController::class, 'readUsers');
+                self::relationship(
+                    $routes,
+                    RoleSchema::TYPE,
+                    RoleSchema::REL_USERS,
+                    RolesController::class,
+                    'readUsers'
+                );
+
+                self::apiController($routes, UserSchema::TYPE, UsersController::class);
+                self::relationship(
+                    $routes,
+                    UserSchema::TYPE,
+                    UserSchema::REL_ROLE,
+                    UsersController::class,
+                    'readRole'
+                );
+
             });
     }
 
@@ -58,6 +75,7 @@ class ApiRoutes implements RoutesConfiguratorInterface
     public static function getMiddleware(): array
     {
         return [
+            CatchAllResponsesMiddleware::class,
             //ClassName::class,
         ];
     }

@@ -1,25 +1,27 @@
-<?php namespace App\Validation;
+<?php declare (strict_types=1);
+
+namespace App\Validation;
 
 use App\Api\RolesApi;
 use App\Api\UsersApi;
-use App\Data\Models\Role;
 use App\Json\Schemas\RoleSchema;
 use App\Json\Schemas\UserSchema;
 use App\Validation\L10n\Messages;
 use Limoncello\Flute\Types\DateTime;
 use Limoncello\Flute\Validation\Rules\ApiRulesTrait;
-use Limoncello\Flute\Validation\Rules\DatabaseRulesTrait;
 use Limoncello\Flute\Validation\Rules\RelationshipRulesTrait;
 use Limoncello\Validation\Contracts\Errors\ErrorCodes;
 use Limoncello\Validation\Contracts\Rules\RuleInterface;
 use Limoncello\Validation\Rules;
+use Limoncello\Flute\Validation\Rules\DatabaseRulesTrait;
+use Limoncello\Flute\Validation\Rules\UuidRulesTrait;
 
 /**
  * @package App
  */
 class BaseRules extends Rules
 {
-    use RelationshipRulesTrait, DatabaseRulesTrait, ApiRulesTrait;
+    use RelationshipRulesTrait, DatabaseRulesTrait, ApiRulesTrait, UuidRulesTrait;
 
     /**
      * @param RuleInterface|null $next
@@ -28,9 +30,7 @@ class BaseRules extends Rules
      */
     public static function roleId(RuleInterface $next = null): RuleInterface
     {
-        $maxLength = Role::getAttributeLengths()[Role::FIELD_ID];
-
-        return self::asSanitizedString(self::stringLengthMax($maxLength, self::readable(RolesApi::class, $next)));
+        return self::stringToInt(self::readable(RolesApi::class, $next));
     }
 
     /**
@@ -41,6 +41,18 @@ class BaseRules extends Rules
     public static function roleRelationship(RuleInterface $next = null): RuleInterface
     {
         return self::toOneRelationship(RoleSchema::TYPE, static::roleId($next));
+    }
+
+    /**
+     * @param RuleInterface|null $next
+     *
+     * @return RuleInterface
+     */
+    public static function rolesRelationship(RuleInterface $next = null): RuleInterface
+    {
+        $readableAll = static::stringArrayToIntArray(static::readableAll(RolesApi::class, $next));
+
+        return self::toManyRelationship(RoleSchema::TYPE, $readableAll);
     }
 
     /**
@@ -107,5 +119,13 @@ class BaseRules extends Rules
     public static function asJsonApiDateTime(RuleInterface $next = null): RuleInterface
     {
         return self::stringToDateTime(DateTime::JSON_API_FORMAT, $next);
+    }
+
+    /**
+     * @return RuleInterface
+     */
+    public static function asText(RuleInterface $next = null): RuleInterface
+    {
+        return self::asSanitizedString($next);
     }
 }

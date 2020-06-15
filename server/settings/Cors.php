@@ -1,4 +1,6 @@
-<?php namespace Settings;
+<?php declare (strict_types=1);
+
+namespace Settings;
 
 use Dotenv\Dotenv;
 use Limoncello\Application\Packages\Cors\CorsSettings;
@@ -16,7 +18,7 @@ class Cors extends CorsSettings
         (new Dotenv(implode(DIRECTORY_SEPARATOR, [__DIR__, '..', '..'])))->load();
 
         return [
-                static::KEY_LOG_IS_ENABLED => filter_var(getenv('APP_ENABLE_LOGS'), FILTER_VALIDATE_BOOLEAN),
+                static::KEY_LOG_IS_ENABLED  => filter_var(getenv('APP_ENABLE_LOGS'), FILTER_VALIDATE_BOOLEAN),
 
                 /**
                  * A list of allowed request origins (no trail slashes, no default ports).

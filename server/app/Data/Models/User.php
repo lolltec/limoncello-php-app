@@ -1,9 +1,12 @@
-<?php namespace App\Data\Models;
+<?php declare (strict_types=1);
+
+namespace App\Data\Models;
 
 use Doctrine\DBAL\Types\Type;
 use Limoncello\Contracts\Application\ModelInterface;
 use Limoncello\Contracts\Data\RelationshipTypes;
 use Limoncello\Flute\Types\DateTimeType;
+use Limoncello\Flute\Types\UuidType;
 
 /**
  * @package App
@@ -16,7 +19,7 @@ class User implements ModelInterface, CommonFields
     /** Primary key */
     const FIELD_ID = 'id_user';
 
-    /** Primary key */
+    /** Foreign key */
     const FIELD_ID_ROLE = Role::FIELD_ID;
 
     /** Field name */
@@ -34,11 +37,11 @@ class User implements ModelInterface, CommonFields
     /** Relationship name */
     const REL_ROLE = 'role';
 
-//    /** Relationship name */
-//    const REL_POSTS = 'posts';
+    /** Minimum email length */
+    const MIN_EMAIL_LENGTH = 3;
 
     /** Minimum password length */
-    const MIN_PASSWORD_LENGTH = 5;
+    const MIN_PASSWORD_LENGTH = 8;
 
     /**
      * @inheritdoc
@@ -64,9 +67,10 @@ class User implements ModelInterface, CommonFields
         return [
             self::FIELD_ID            => Type::INTEGER,
             self::FIELD_ID_ROLE       => Role::getAttributeTypes()[Role::FIELD_ID],
+            self::FIELD_UUID          => UuidType::NAME,
+            self::FIELD_EMAIL         => Type::STRING,
             self::FIELD_FIRST_NAME    => Type::STRING,
             self::FIELD_LAST_NAME     => Type::STRING,
-            self::FIELD_EMAIL         => Type::STRING,
             self::FIELD_PASSWORD_HASH => Type::STRING,
             self::FIELD_CREATED_AT    => DateTimeType::NAME,
             self::FIELD_UPDATED_AT    => DateTimeType::NAME,
@@ -80,10 +84,10 @@ class User implements ModelInterface, CommonFields
     public static function getAttributeLengths(): array
     {
         return [
-            self::FIELD_ID_ROLE       => Role::getAttributeLengths()[Role::FIELD_ID],
+            self::FIELD_UUID          => 36,
+            self::FIELD_EMAIL         => 255,
             self::FIELD_FIRST_NAME    => 100,
             self::FIELD_LAST_NAME     => 100,
-            self::FIELD_EMAIL         => 255,
             self::FIELD_PASSWORD_HASH => 100,
         ];
     }
@@ -105,9 +109,6 @@ class User implements ModelInterface, CommonFields
             RelationshipTypes::BELONGS_TO => [
                 self::REL_ROLE => [Role::class, self::FIELD_ID_ROLE, Role::REL_USERS],
             ],
-//            RelationshipTypes::HAS_MANY   => [
-//                self::REL_POSTS => [Post::class, Post::FIELD_ID_USER, Post::REL_USER],
-//            ],
         ];
     }
 }

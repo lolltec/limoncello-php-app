@@ -1,4 +1,6 @@
-<?php namespace App\Data\Migrations;
+<?php declare (strict_types=1);
+
+namespace App\Data\Migrations;
 
 use App\Data\Models\Role as Model;
 use Doctrine\DBAL\DBALException;
@@ -20,9 +22,14 @@ class RolesMigration implements MigrationInterface
     public function migrate(): void
     {
         $this->createTable(Model::class, [
-            $this->primaryString(Model::FIELD_ID),
-            $this->string(Model::FIELD_DESCRIPTION),
+            $this->primaryInt(Model::FIELD_ID),
+            $this->defaultUuid(),
+            $this->string(Model::FIELD_NAME),
+            $this->nullableText(Model::FIELD_DESCRIPTION),
             $this->timestamps(),
+
+            $this->unique([Model::FIELD_UUID]),
+            $this->unique([Model::FIELD_NAME]),
         ]);
     }
 

@@ -1,4 +1,6 @@
-<?php namespace App\Container;
+<?php declare (strict_types=1);
+
+namespace App\Container;
 
 use Limoncello\Application\Http\RequestStorage;
 use Limoncello\Contracts\Application\ContainerConfiguratorInterface;

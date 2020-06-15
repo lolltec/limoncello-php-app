@@ -1,7 +1,9 @@
-<?php namespace Tests\Api;
+<?php declare (strict_types=1);
 
-use App\Api\RolesApi;
-use App\Data\Seeds\RolesSeed;
+namespace Tests\Api;
+
+use App\Api\RolesApi as Api;
+use App\Data\Seeds\RolesSeed as Seed;
 use Tests\TestCase;
 
 /**
@@ -17,10 +19,10 @@ class RoleApiTest extends TestCase
         $this->setPreventCommits();
 
         $this->setModerator();
-        $api = $this->createApi(RolesApi::class);
+        $api = $this->createApi(Api::class);
 
-        $roleId = RolesSeed::ROLE_USER;
-        $this->assertNotNull($api->read($roleId));
+        $roleId = Seed::ROLE_USER;
+        $this->assertNotNull($api->read((string)$roleId));
     }
 
     /**
@@ -34,9 +36,9 @@ class RoleApiTest extends TestCase
         $accessToken = $oauthToken->access_token;
         $this->setUserByToken($accessToken);
 
-        $api = $this->createApi(RolesApi::class);
+        $api = $this->createApi(Api::class);
 
-        $roleId = RolesSeed::ROLE_USER;
-        $this->assertNotNull($api->read($roleId));
+        $roleId = Seed::ROLE_USER;
+        $this->assertNotNull($api->read((string)$roleId));
     }
 }

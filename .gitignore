@@ -1,4 +1,6 @@
-server/storage/local.sqlite
+server/storage/*.sqlite
+server/storage/*.png
+server/storage/*.jpg
 .idea/
 node_modules/
 vendor/
@@ -7,3 +9,4 @@ composer.lock
 package-lock.json
 yarn.lock
 yarn-error.log
+public/dist

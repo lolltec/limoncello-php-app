@@ -1,4 +1,6 @@
-<?php namespace App\Data\Seeds;
+<?php declare (strict_types=1);
+
+namespace App\Data\Seeds;
 
 use App\Data\Models\RoleScope;
 use Doctrine\DBAL\DBALException;
@@ -50,11 +52,11 @@ class PassportSeed implements SeedInterface
 
         // scope ID => description (don't hesitate to add required for your application)
         $scopes    = [
-            static::SCOPE_ADMIN_OAUTH    => 'Can create, update and delete OAuth clients, redirect URIs and scopes.',
-            static::SCOPE_ADMIN_USERS    => 'Can create, update and delete users.',
-            static::SCOPE_ADMIN_ROLES    => 'Can create, update and delete roles.',
-            static::SCOPE_VIEW_USERS     => 'Can view users.',
-            static::SCOPE_VIEW_ROLES     => 'Can view roles.',
+            static::SCOPE_ADMIN_OAUTH => 'Can create, update and delete OAuth clients, redirect URIs and scopes.',
+            static::SCOPE_ADMIN_USERS => 'Can create, update and delete users.',
+            static::SCOPE_ADMIN_ROLES => 'Can create, update and delete roles.',
+            static::SCOPE_VIEW_USERS  => 'Can view users.',
+            static::SCOPE_VIEW_ROLES  => 'Can view roles.',
         ];
         $scopeRepo = $integration->getScopeRepository();
         foreach ($scopes as $scopeId => $scopeDescription) {
@@ -84,7 +86,7 @@ class PassportSeed implements SeedInterface
 
         // assign scopes to roles
 
-        $this->assignScopes(RolesSeed::ROLE_ADMIN, [
+        $this->assignScopes((string)RolesSeed::ROLE_ADMINISTRATOR, [
             static::SCOPE_ADMIN_OAUTH,
             static::SCOPE_ADMIN_USERS,
             static::SCOPE_ADMIN_ROLES,
@@ -92,14 +94,15 @@ class PassportSeed implements SeedInterface
             static::SCOPE_VIEW_ROLES,
         ]);
 
-        $this->assignScopes(RolesSeed::ROLE_MODERATOR, [
+        $this->assignScopes((string)RolesSeed::ROLE_MODERATOR, [
             static::SCOPE_ADMIN_USERS,
             static::SCOPE_VIEW_USERS,
             static::SCOPE_VIEW_ROLES,
         ]);
 
-        $this->assignScopes(RolesSeed::ROLE_USER, [
+        $this->assignScopes((string)RolesSeed::ROLE_USER, [
             static::SCOPE_VIEW_USERS,
+            static::SCOPE_VIEW_ROLES,
         ]);
     }
 

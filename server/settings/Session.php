@@ -1,4 +1,6 @@
-<?php namespace Settings;
+<?php declare (strict_types=1);
+
+namespace Settings;
 
 use Limoncello\Application\Packages\Session\SessionSettings;
 
@@ -18,7 +20,7 @@ class Session extends SessionSettings
 
         return [
 
-                static::KEY_COOKIE_SECURE   => '',
+                static::KEY_COOKIE_SECURE   => '1',
                 static::KEY_COOKIE_LIFETIME => '0',
 
             ] + parent::getSettings();

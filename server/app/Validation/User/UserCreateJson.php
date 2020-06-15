@@ -1,4 +1,6 @@
-<?php namespace App\Validation\User;
+<?php declare (strict_types=1);
+
+namespace App\Validation\User;
 
 use App\Json\Schemas\UserSchema as Schema;
 use App\Validation\User\UserRules as r;
@@ -34,9 +36,9 @@ final class UserCreateJson implements JsonApiDataRulesInterface
     public static function getAttributeRules(): array
     {
         return [
-            Schema::ATTR_FIRST_NAME => r::required(r::firstName()),
-            Schema::ATTR_LAST_NAME  => r::required(r::lastName()),
-            Schema::ATTR_EMAIL      => r::required(r::uniqueEmail()),
+            Schema::ATTR_EMAIL      => r::required(r::email()),
+            Schema::ATTR_FIRST_NAME => r::firstName(),
+            Schema::ATTR_LAST_NAME  => r::lastName(),
             Schema::V_ATTR_PASSWORD => r::required(r::password()),
         ];
     }

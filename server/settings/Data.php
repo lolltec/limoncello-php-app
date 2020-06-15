@@ -1,4 +1,6 @@
-<?php namespace Settings;
+<?php declare (strict_types=1);
+
+namespace Settings;
 
 use Faker\Generator;
 use Limoncello\Application\Packages\Data\DataSettings;

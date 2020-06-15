@@ -1,4 +1,6 @@
-<?php namespace App;
+<?php declare (strict_types=1);
+
+namespace App;
 
 use Limoncello\Contracts\Core\SapiInterface;
 use Settings\Application as ApplicationSettings;

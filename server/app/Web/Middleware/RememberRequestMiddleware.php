@@ -1,4 +1,6 @@
-<?php namespace App\Web\Middleware;
+<?php declare (strict_types=1);
+
+namespace App\Web\Middleware;
 
 use Closure;
 use Limoncello\Contracts\Application\MiddlewareInterface;
@@ -24,7 +26,8 @@ class RememberRequestMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         Closure $next,
         ContainerInterface $container
-    ): ResponseInterface {
+    ): ResponseInterface
+    {
         if ($container->has(RequestStorageInterface::class) === true) {
             /** @var RequestStorageInterface $requestStorage */
             $requestStorage = $container->get(RequestStorageInterface::class);

@@ -1,9 +1,11 @@
-<?php namespace Tests\Json;
+<?php declare (strict_types=1);
 
-use App\Data\Models\User;
+namespace Tests\Json;
+
+use App\Data\Models\User as Model;
 use App\Data\Seeds\RolesSeed;
-use App\Data\Seeds\UsersSeed;
-use App\Json\Schemas\UserSchema;
+use App\Data\Seeds\UsersSeed as Seed;
+use App\Json\Schemas\UserSchema as Schema;
 use Limoncello\Contracts\Http\ThrowableResponseInterface;
 use Limoncello\Testing\JsonApiCallsTrait;
 use Neomerx\JsonApi\Exceptions\JsonApiException;
@@ -16,7 +18,7 @@ class UserApiTest extends TestCase
 {
     use JsonApiCallsTrait;
 
-    const API_URI = '/api/v1/' . UserSchema::TYPE;
+    const API_URI = '/api/v1/' . Schema::TYPE;
 
     /**
      * Test User's API.
@@ -30,7 +32,7 @@ class UserApiTest extends TestCase
 
         $json = json_decode((string)$response->getBody());
         $this->assertObjectHasAttribute('data', $json);
-        $this->assertCount(UsersSeed::NUMBER_OF_RECORDS, $json->data);
+        $this->assertCount(3, $json->data);
     }
 
     /**
@@ -42,12 +44,12 @@ class UserApiTest extends TestCase
 
         $queryParams = [
             'filter'  => [
-                'id'               => [
-                    'greater-than' => '1',  // 'long' form for condition operations
-                    'lte'          => '5',  // 'short' form supported as well
+                'id'        => [
+                    'gte' => '1',  // 'long' form for condition operations
+                    'lte' => '5',  // 'short' form supported as well
                 ],
-                'role.description' => [
-                    'like' => '%',          // example how conditions could be applied to relationships' attributes
+                'role.name' => [
+                    'like' => '%%',          // example how conditions could be applied to relationships' attributes
                 ],
             ],
             'sort'    => '+id,-first-name', // example of how multiple sorting conditions could be applied
@@ -62,18 +64,18 @@ class UserApiTest extends TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertNotNull($resources = json_decode((string)$response->getBody()));
-        $this->assertCount(4, $resources->data);
+        $this->assertCount(3, $resources->data);
 
         $resource = $resources->data[0];
-        $this->assertEquals(2, $resource->id);
+        $this->assertEquals(1, $resource->id);
+        $this->assertEquals(RolesSeed::ROLE_ADMINISTRATOR, $resource->relationships->role->data->id);
+
+        $resource = $resources->data[2];
+        $this->assertEquals(3, $resource->id);
         $this->assertEquals(RolesSeed::ROLE_USER, $resource->relationships->role->data->id);
 
-        $resource = $resources->data[3];
-        $this->assertEquals(5, $resource->id);
-        $this->assertEquals(RolesSeed::ROLE_ADMIN, $resource->relationships->role->data->id);
-
         // check response has included posts as well
-        $this->assertCount(2, $resources->included);
+        $this->assertCount(3, $resources->included);
     }
 
     /**
@@ -99,7 +101,7 @@ class UserApiTest extends TestCase
         $json = json_decode((string)$response->getBody());
         $this->assertObjectHasAttribute('data', $json);
         $this->assertEquals($userId, $json->data->id);
-        $this->assertEquals(UserSchema::TYPE, $json->data->type);
+        $this->assertEquals(Schema::TYPE, $json->data->type);
     }
 
     /**
@@ -129,7 +131,8 @@ class UserApiTest extends TestCase
     {
         $this->setPreventCommits();
 
-        $password  = 'secret';
+        $role      = RolesSeed::ROLE_USER;
+        $password  = Seed::DEFAULT_PASSWORD;
         $email     = "john@dow.foo";
         $jsonInput = <<<EOT
         {
@@ -143,7 +146,7 @@ class UserApiTest extends TestCase
                 },
                 "relationships": {
                     "role": {
-                        "data": { "type": "roles", "id": "user" }
+                        "data": { "type": "roles", "id": "$role" }
                     }
                 }
             }
@@ -165,8 +168,8 @@ EOT;
         $query     = $this->getCapturedConnection()->createQueryBuilder();
         $statement = $query
             ->select('*')
-            ->from(User::TABLE_NAME)
-            ->where(User::FIELD_ID . '=' . $query->createPositionalParameter($userId))
+            ->from(Model::TABLE_NAME)
+            ->where(Model::FIELD_ID . '=' . $query->createPositionalParameter($userId))
             ->execute();
         $this->assertNotEmpty($statement->fetch());
     }
@@ -206,7 +209,7 @@ EOT;
         /** @var JsonApiException $exception */
         $this->assertInstanceOf(JsonApiException::class, $exception = $response->getThrowable());
 
-        $this->assertCount(1, $exception->getErrors());
+        $this->assertCount(3, $exception->getErrors());
         $error = $exception->getErrors()->getArrayCopy()[0];
         $this->assertEquals('The value should be a valid email address.', $error->getDetail());
     }
@@ -218,7 +221,9 @@ EOT;
     {
         $this->setPreventCommits();
 
+        $role      = RolesSeed::ROLE_ADMINISTRATOR;
         $userId    = 2;
+        $role      = RolesSeed::ROLE_ADMINISTRATOR;
         $jsonInput = <<<EOT
         {
             "data" : {
@@ -231,7 +236,7 @@ EOT;
                 },
                 "relationships": {
                     "role": {
-                        "data": { "type": "roles", "id": "user" }
+                        "data": { "type": "roles", "id": "$role" }
                     }
                 }
             }
@@ -253,14 +258,83 @@ EOT;
         $query     = $this->getCapturedConnection()->createQueryBuilder();
         $statement = $query
             ->select('*')
-            ->from(User::TABLE_NAME)
-            ->where(User::FIELD_ID . '=' . $query->createPositionalParameter($userId))
+            ->from(Model::TABLE_NAME)
+            ->where(Model::FIELD_ID . '=' . $query->createPositionalParameter($userId))
             ->execute();
         $this->assertNotEmpty($values = $statement->fetch());
-        $this->assertEquals('John', $values[User::FIELD_FIRST_NAME]);
-        $this->assertEquals('Dow', $values[User::FIELD_LAST_NAME]);
-        $this->assertNotEmpty($values[User::FIELD_UPDATED_AT]);
-        $this->assertEquals(RolesSeed::ROLE_USER, $values[User::FIELD_ID_ROLE]);
+        $this->assertEquals('John', $values[Model::FIELD_FIRST_NAME]);
+        $this->assertEquals('Dow', $values[Model::FIELD_LAST_NAME]);
+        $this->assertNotEmpty($values[Model::FIELD_UPDATED_AT]);
+        $this->assertEquals(RolesSeed::ROLE_ADMINISTRATOR, $values[Model::FIELD_ID_ROLE]);
+    }
+
+    public function testUniquenessOnUpdate1(): void
+    {
+        $this->setPreventCommits();
+        $userId = Seed::ID_USER;
+        $userMail = Seed::USER_ADMINISTRATOR;
+
+        $jsonInput = <<<EOT
+        {
+            "data" : {
+                "type" : "users",
+                "id"   : "$userId",
+                "attributes" : {
+                    "email" : "$userMail"
+                }
+            }
+        }
+EOT;
+
+        /** @var ThrowableResponseInterface $response */
+        $this->assertInstanceOf(
+            ThrowableResponseInterface::class,
+            $response = $this->patchJsonApi(self::API_URI . "/{$userId}", $jsonInput, $this->getAdminOAuthHeader())
+        );
+        /** @var JsonApiException $exception */
+        $this->assertInstanceOf(JsonApiException::class, $exception = $response->getThrowable());
+
+        $this->assertCount(1, $exception->getErrors());
+        $error = $exception->getErrors()->getArrayCopy()[0];
+        $this->assertEquals('The value should be a unique identifier.', $error->getDetail());
+    }
+
+    public function testUniquenessOnUpdate2(): void
+    {
+        $this->setPreventCommits();
+        $userId = Seed::ID_USER;
+        $userMail = Seed::USER_USER;
+
+        $jsonInput = <<<EOT
+        {
+            "data" : {
+                "type" : "users",
+                "id"   : "$userId",
+                "attributes" : {
+                    "email" : "$userMail"
+                }
+            }
+        }
+EOT;
+
+        $response = $this->patchJsonApi(self::API_URI . "/$userId", $jsonInput,  $this->getAdminOAuthHeader());
+        $json = json_decode((string)$response->getBody());
+        $this->assertObjectHasAttribute('data', $json);
+        $this->assertEquals($userId, $json->data->id);
+
+        // check user exists
+        $this->assertEquals(200, $this->get(self::API_URI . "/$userId", [], $this->getAdminOAuthHeader())->getStatusCode());
+
+        // ... or make same check in the database
+        $query     = $this->getCapturedConnection()->createQueryBuilder();
+        $statement = $query
+            ->select('*')
+            ->from(Model::TABLE_NAME)
+            ->where(Model::FIELD_ID . '=' . $query->createPositionalParameter($userId))
+            ->execute();
+        $this->assertNotEmpty($values = $statement->fetch());
+        $this->assertEquals($userMail, $values[Model::FIELD_EMAIL]);
+        $this->assertNotEmpty($values[Model::FIELD_UPDATED_AT]);
     }
 
     /**
@@ -269,6 +343,9 @@ EOT;
     public function testUnauthorizedDenied()
     {
         // no token header
+
+        $response = $this->get(self::API_URI);
+        $this->assertEquals(403, $response->getStatusCode());
 
         /** @var ThrowableResponseInterface $response */
         $this->assertInstanceOf(

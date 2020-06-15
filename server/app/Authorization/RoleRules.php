@@ -1,4 +1,6 @@
-<?php namespace App\Authorization;
+<?php declare (strict_types=1);
+
+namespace App\Authorization;
 
 use App\Data\Seeds\PassportSeed;
 use App\Json\Schemas\RoleSchema as Schema;
@@ -18,10 +20,13 @@ class RoleRules implements ResourceAuthorizationRulesInterface
     const ACTION_VIEW_ROLES = 'canViewRoles';
 
     /** Action name */
-    const ACTION_ADMIN_ROLES = 'canAdminRoles';
+    const ACTION_CREATE_ROLE = 'canCreateRole';
 
     /** Action name */
-    const ACTION_VIEW_ROLE_USERS = 'canViewRoleUsers';
+    const ACTION_EDIT_ROLE = 'canEditRole';
+
+    /** Action name */
+    const ACTION_VIEW_USERS = 'canViewUsers';
 
     /**
      * @inheritdoc
@@ -52,7 +57,7 @@ class RoleRules implements ResourceAuthorizationRulesInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public static function canAdminRoles(ContextInterface $context): bool
+    public static function canCreateRole(ContextInterface $context): bool
     {
         return self::hasScope($context, PassportSeed::SCOPE_ADMIN_ROLES);
     }
@@ -65,10 +70,21 @@ class RoleRules implements ResourceAuthorizationRulesInterface
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public static function canViewRoleUsers(ContextInterface $context): bool
+    public static function canEditRole(ContextInterface $context): bool
     {
-        return
-            self::hasScope($context, PassportSeed::SCOPE_VIEW_USERS) &&
-            self::hasScope($context, PassportSeed::SCOPE_VIEW_ROLES);
+        return self::hasScope($context, PassportSeed::SCOPE_ADMIN_ROLES);
+    }
+
+    /**
+     * @param ContextInterface $context
+     *
+     * @return bool
+     *
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public static function canViewUsers(ContextInterface $context): bool
+    {
+        return self::canViewRoles($context) && UserRules::canViewUsers($context);
     }
 }

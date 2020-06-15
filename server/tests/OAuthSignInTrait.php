@@ -1,14 +1,16 @@
-<?php namespace Tests;
+<?php declare (strict_types=1);
+
+namespace Tests;
 
 use App\Data\Seeds\UsersSeed;
 use App\Web\Middleware\CookieAuth;
 use Closure;
+use Laminas\Diactoros\ServerRequest;
 use Limoncello\Contracts\Core\ApplicationInterface;
 use Limoncello\Contracts\Passport\PassportAccountManagerInterface;
 use Limoncello\Passport\Contracts\PassportServerInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
-use Zend\Diactoros\ServerRequest;
 
 /**
  * @package Tests
@@ -23,7 +25,7 @@ trait OAuthSignInTrait
      */
     private function getUserEmail(): string
     {
-        return 'bettie14@gmail.com';
+        return UsersSeed::USER_USER;
     }
 
     /**
@@ -41,7 +43,7 @@ trait OAuthSignInTrait
      */
     private function getModeratorEmail(): string
     {
-        return 'waters.johann@hotmail.com';
+        return UsersSeed::USER_MODERATOR;
     }
 
     /**
@@ -59,7 +61,7 @@ trait OAuthSignInTrait
      */
     private function getAdminEmail(): string
     {
-        return 'denesik.stewart@gmail.com';
+        return UsersSeed::USER_ADMINISTRATOR;
     }
 
     /**
@@ -204,8 +206,7 @@ trait OAuthSignInTrait
      */
     private function createSetUserClosureWithCredentials(string $username, string $password): Closure
     {
-        return function (ApplicationInterface $app, ContainerInterface $container) use ($username, $password): void
-        {
+        return function (ApplicationInterface $app, ContainerInterface $container) use ($username, $password): void {
             assert($app !== null);
 
             $request = (new ServerRequest())->withParsedBody($this->createOAuthTokenRequestBody($username, $password));
@@ -214,8 +215,8 @@ trait OAuthSignInTrait
             $passportServer = $container->get(PassportServerInterface::class);
             $tokenResponse  = $passportServer->postCreateToken($request);
             assert($tokenResponse->getStatusCode() === 200);
-            $token          = json_decode((string)$tokenResponse->getBody());
-            $authToken      = $token->access_token;
+            $token     = json_decode((string)$tokenResponse->getBody());
+            $authToken = $token->access_token;
 
             /** @var PassportAccountManagerInterface $manager */
             assert($container->has(PassportAccountManagerInterface::class));
@@ -231,8 +232,7 @@ trait OAuthSignInTrait
      */
     private function createSetUserClosureWithAccessToken(string $accessToken): Closure
     {
-        return function (ApplicationInterface $app, ContainerInterface $container) use ($accessToken): void
-        {
+        return function (ApplicationInterface $app, ContainerInterface $container) use ($accessToken): void {
             assert($app !== null);
 
             /** @var PassportAccountManagerInterface $manager */

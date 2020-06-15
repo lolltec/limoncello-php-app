@@ -1,9 +1,12 @@
-<?php namespace App\Data\Models;
+<?php declare (strict_types=1);
+
+namespace App\Data\Models;
 
 use Doctrine\DBAL\Types\Type;
 use Limoncello\Contracts\Application\ModelInterface;
 use Limoncello\Contracts\Data\RelationshipTypes;
 use Limoncello\Flute\Types\DateTimeType;
+use Limoncello\Flute\Types\UuidType;
 
 /**
  * @package App
@@ -17,10 +20,16 @@ class Role implements ModelInterface, CommonFields
     const FIELD_ID = 'id_role';
 
     /** Field name */
+    const FIELD_NAME = 'name';
+
+    /** Field name */
     const FIELD_DESCRIPTION = 'description';
 
     /** Relationship name */
     const REL_USERS = 'users';
+
+    /** Minimum id length */
+    const MIN_NAME_LENGTH = 2;
 
     /**
      * @inheritdoc
@@ -44,8 +53,10 @@ class Role implements ModelInterface, CommonFields
     public static function getAttributeTypes(): array
     {
         return [
-            self::FIELD_ID          => Type::STRING,
-            self::FIELD_DESCRIPTION => Type::STRING,
+            self::FIELD_ID          => Type::INTEGER,
+            self::FIELD_UUID        => UuidType::NAME,
+            self::FIELD_NAME        => Type::STRING,
+            self::FIELD_DESCRIPTION => Type::TEXT,
             self::FIELD_CREATED_AT  => DateTimeType::NAME,
             self::FIELD_UPDATED_AT  => DateTimeType::NAME,
             self::FIELD_DELETED_AT  => DateTimeType::NAME,
@@ -58,8 +69,8 @@ class Role implements ModelInterface, CommonFields
     public static function getAttributeLengths(): array
     {
         return [
-            self::FIELD_ID          => 255,
-            self::FIELD_DESCRIPTION => 255,
+            self::FIELD_UUID => 36,
+            self::FIELD_NAME => 255,
         ];
     }
 

@@ -1,4 +1,6 @@
-<?php namespace App\Validation\User;
+<?php declare (strict_types=1);
+
+namespace App\Validation\User;
 
 use App\Json\Schemas\RoleSchema;
 use App\Json\Schemas\UserSchema as Schema;
@@ -18,7 +20,7 @@ class UsersReadQuery implements JsonApiQueryRulesInterface
      */
     public static function getIdentityRule(): ?RuleInterface
     {
-        return r::stringToInt(r::moreThan(0));
+        return r::asSanitizedString();
     }
 
     /**
@@ -28,10 +30,15 @@ class UsersReadQuery implements JsonApiQueryRulesInterface
     {
         return [
             Schema::RESOURCE_ID                                   => static::getIdentityRule(),
+            Schema::ATTR_UUID                                     => r::asSanitizedString(),
+            Schema::ATTR_EMAIL                                    => r::asSanitizedString(),
             Schema::ATTR_FIRST_NAME                               => r::asSanitizedString(),
             Schema::ATTR_LAST_NAME                                => r::asSanitizedString(),
             Schema::ATTR_CREATED_AT                               => r::asJsonApiDateTime(),
+            Schema::ATTR_UPDATED_AT                               => r::asSanitizedString(),
             Schema::REL_ROLE                                      => r::asSanitizedString(),
+            Schema::REL_ROLE . '.' . RoleSchema::ATTR_UUID        => r::asSanitizedString(),
+            Schema::REL_ROLE . '.' . RoleSchema::ATTR_NAME        => r::asSanitizedString(),
             Schema::REL_ROLE . '.' . RoleSchema::ATTR_DESCRIPTION => r::asSanitizedString(),
         ];
     }
@@ -45,8 +52,12 @@ class UsersReadQuery implements JsonApiQueryRulesInterface
             // if fields sets are given only the following fields are OK
             Schema::TYPE     => r::inValues([
                 Schema::RESOURCE_ID,
+                Schema::ATTR_UUID,
+                Schema::ATTR_EMAIL,
                 Schema::ATTR_FIRST_NAME,
                 Schema::ATTR_LAST_NAME,
+                Schema::ATTR_CREATED_AT,
+                Schema::ATTR_UPDATED_AT,
                 Schema::REL_ROLE,
             ]),
             // roles field sets could be any
@@ -61,9 +72,13 @@ class UsersReadQuery implements JsonApiQueryRulesInterface
     {
         return r::isString(r::inValues([
             Schema::RESOURCE_ID,
+            Schema::ATTR_EMAIL,
             Schema::ATTR_FIRST_NAME,
             Schema::ATTR_LAST_NAME,
+            Schema::ATTR_CREATED_AT,
+            Schema::ATTR_UPDATED_AT,
             Schema::REL_ROLE,
+            Schema::REL_ROLE . '.' . RoleSchema::ATTR_NAME,
         ]));
     }
 

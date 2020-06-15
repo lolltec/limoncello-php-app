@@ -1,4 +1,6 @@
-<?php namespace Settings;
+<?php declare (strict_types=1);
+
+namespace Settings;
 
 use App\Json\Exceptions\ThrowableConverter;
 use App\Routes\ApiRoutes;
@@ -45,9 +47,9 @@ class ApplicationApi extends FluteSettings
                 static::KEY_JSON_ENCODE_OPTIONS                       => $defaults[static::KEY_JSON_ENCODE_OPTIONS] | JSON_PRETTY_PRINT,
                 static::KEY_DO_NOT_LOG_EXCEPTIONS_LIST                => [
 
-                    AuthorizationException::class,
+                        AuthorizationException::class,
 
-                ] + $defaults[static::KEY_DO_NOT_LOG_EXCEPTIONS_LIST],
+                    ] + $defaults[static::KEY_DO_NOT_LOG_EXCEPTIONS_LIST],
 
             ] + $defaults;
     }

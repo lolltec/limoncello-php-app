@@ -1,4 +1,6 @@
-<?php namespace Settings;
+<?php declare (strict_types=1);
+
+namespace Settings;
 
 use App\Authentication\OAuth;
 use App\Data\Models\User;

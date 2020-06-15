@@ -1,4 +1,6 @@
-<?php namespace App\Commands\Middleware;
+<?php declare (strict_types=1);
+
+namespace App\Commands\Middleware;
 
 use App\Api\UsersApi;
 use Closure;

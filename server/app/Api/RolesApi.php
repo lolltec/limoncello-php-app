@@ -1,6 +1,8 @@
-<?php namespace App\Api;
+<?php declare (strict_types=1);
 
-use App\Authorization\RoleRules;
+namespace App\Api;
+
+use App\Authorization\RoleRules as Rules;
 use App\Data\Models\Role as Model;
 use App\Json\Schemas\RoleSchema as Schema;
 use Limoncello\Contracts\Exceptions\AuthorizationExceptionInterface;
@@ -32,7 +34,7 @@ class RolesApi extends BaseApi
      */
     public function create(?string $index, iterable $attributes, iterable $toMany): string
     {
-        $this->authorize(RoleRules::ACTION_ADMIN_ROLES, Schema::TYPE, $index);
+        $this->authorize(Rules::ACTION_CREATE_ROLE, Schema::TYPE, $index);
 
         return parent::create($index, $attributes, $toMany);
     }
@@ -42,9 +44,9 @@ class RolesApi extends BaseApi
      *
      * @throws AuthorizationExceptionInterface
      */
-    public function update(string $index, iterable $attributes, iterable $toMany): int
+    public function update(?string $index, iterable $attributes, iterable $toMany): int
     {
-        $this->authorize(RoleRules::ACTION_ADMIN_ROLES, Schema::TYPE, $index);
+        $this->authorize(Rules::ACTION_EDIT_ROLE, Schema::TYPE, $index);
 
         return parent::update($index, $attributes, $toMany);
     }
@@ -54,9 +56,9 @@ class RolesApi extends BaseApi
      *
      * @throws AuthorizationExceptionInterface
      */
-    public function remove(string $index): bool
+    public function remove(?string $index): bool
     {
-        $this->authorize(RoleRules::ACTION_ADMIN_ROLES, Schema::TYPE, $index);
+        $this->authorize(Rules::ACTION_EDIT_ROLE, Schema::TYPE, $index);
 
         return parent::remove($index);
     }
@@ -68,7 +70,7 @@ class RolesApi extends BaseApi
      */
     public function index(): PaginatedDataInterface
     {
-        $this->authorize(RoleRules::ACTION_VIEW_ROLES, Schema::TYPE);
+        $this->authorize(Rules::ACTION_VIEW_ROLES, Schema::TYPE);
 
         return parent::index();
     }
@@ -78,9 +80,9 @@ class RolesApi extends BaseApi
      *
      * @throws AuthorizationExceptionInterface
      */
-    public function read(string $index)
+    public function read(?string $index)
     {
-        $this->authorize(RoleRules::ACTION_VIEW_ROLES, Schema::TYPE, $index);
+        $this->authorize(Rules::ACTION_VIEW_ROLES, Schema::TYPE, $index);
 
         return parent::read($index);
     }
@@ -100,8 +102,9 @@ class RolesApi extends BaseApi
         $index,
         iterable $relationshipFilters = null,
         iterable $relationshipSorts = null
-    ): PaginatedDataInterface {
-        $this->authorize(RoleRules::ACTION_VIEW_ROLE_USERS, Schema::TYPE, $index);
+    ): PaginatedDataInterface
+    {
+        $this->authorize(Rules::ACTION_VIEW_USERS, Schema::TYPE, $index);
 
         return $this->readRelationshipInt($index, Model::REL_USERS, $relationshipFilters, $relationshipSorts);
     }

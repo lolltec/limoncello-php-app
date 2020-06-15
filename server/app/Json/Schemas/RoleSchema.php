@@ -1,4 +1,6 @@
-<?php namespace App\Json\Schemas;
+<?php declare (strict_types=1);
+
+namespace App\Json\Schemas;
 
 use App\Data\Models\Role as Model;
 
@@ -14,10 +16,13 @@ class RoleSchema extends BaseSchema
     const MODEL = Model::class;
 
     /** Attribute name */
-    const ATTR_DESCRIPTION = 'description';
+    const ATTR_NAME = Model::FIELD_NAME;
+
+    /** Attribute name */
+    const ATTR_DESCRIPTION = Model::FIELD_DESCRIPTION;
 
     /** Relationship name */
-    const REL_USERS = 'users';
+    const REL_USERS = Model::REL_USERS;
 
     /**
      * @inheritdoc
@@ -27,6 +32,8 @@ class RoleSchema extends BaseSchema
         return [
             self::SCHEMA_ATTRIBUTES    => [
                 self::RESOURCE_ID      => Model::FIELD_ID,
+                self::ATTR_UUID        => Model::FIELD_UUID,
+                self::ATTR_NAME        => Model::FIELD_NAME,
                 self::ATTR_DESCRIPTION => Model::FIELD_DESCRIPTION,
                 self::ATTR_CREATED_AT  => Model::FIELD_CREATED_AT,
                 self::ATTR_UPDATED_AT  => Model::FIELD_UPDATED_AT,

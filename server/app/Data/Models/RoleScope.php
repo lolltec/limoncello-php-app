@@ -1,4 +1,6 @@
-<?php namespace App\Data\Models;
+<?php declare (strict_types=1);
+
+namespace App\Data\Models;
 
 use Doctrine\DBAL\Types\Type;
 use Limoncello\Contracts\Application\ModelInterface;
@@ -59,7 +61,6 @@ class RoleScope implements ModelInterface, CommonFields
     public static function getAttributeLengths(): array
     {
         return [
-            self::FIELD_ID_ROLE  => Role::getAttributeLengths()[Role::FIELD_ID],
             self::FIELD_ID_SCOPE => 255,
         ];
     }
