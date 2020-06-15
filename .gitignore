@@ -1,4 +1,4 @@
-server/storage/local.sqlite
+server/storage/*.sqlite
 .idea/
 node_modules/
 vendor/

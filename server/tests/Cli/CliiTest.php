@@ -1,4 +1,6 @@
-<?php namespace Tests\Cli;
+<?php declare (strict_types=1);
+
+namespace Tests\Cli;
 
 use Exception;
 use Limoncello\Application\Commands\DataCommand;

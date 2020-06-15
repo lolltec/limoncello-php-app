@@ -1,4 +1,6 @@
-<?php namespace Tests\Api;
+<?php declare (strict_types=1);
+
+namespace Tests\Api;
 
 use App\Api\RolesApi;
 use App\Data\Seeds\RolesSeed;
@@ -20,7 +22,7 @@ class RoleApiTest extends TestCase
         $api = $this->createApi(RolesApi::class);
 
         $roleId = RolesSeed::ROLE_USER;
-        $this->assertNotNull($api->read($roleId));
+        $this->assertNotNull($api->read((string)$roleId));
     }
 
     /**
@@ -37,6 +39,6 @@ class RoleApiTest extends TestCase
         $api = $this->createApi(RolesApi::class);
 
         $roleId = RolesSeed::ROLE_USER;
-        $this->assertNotNull($api->read($roleId));
+        $this->assertNotNull($api->read((string)$roleId));
     }
 }

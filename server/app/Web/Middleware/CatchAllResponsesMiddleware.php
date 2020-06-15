@@ -1,14 +1,14 @@
 <?php declare (strict_types=1);
 
+namespace Settings;
+
 namespace App\Web\Middleware;
 
 use App\Web\Controllers\ControllerTrait;
+use App\Web\Views;
 use Closure;
-use Laminas\Diactoros\Response\EmptyResponse;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Limoncello\Contracts\Application\MiddlewareInterface;
-use Limoncello\Contracts\Exceptions\AuthorizationExceptionInterface;
-use Limoncello\Contracts\Http\ThrowableResponseInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -18,7 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * @package App
  */
-class CustomErrorResponsesMiddleware implements MiddlewareInterface
+class CatchAllResponsesMiddleware implements MiddlewareInterface
 {
     use ControllerTrait;
 
@@ -39,17 +39,10 @@ class CustomErrorResponsesMiddleware implements MiddlewareInterface
         /** @var ResponseInterface $response */
         $response = $next($request);
 
-        // is it an error response?
-        if ($response instanceof ThrowableResponseInterface) {
-            if ($response->getThrowable() instanceof AuthorizationExceptionInterface) {
-                return new EmptyResponse(403);
-            }
-        }
-
         // error responses might have just HTTP 4xx code as well
         switch ($response->getStatusCode()) {
             case 404:
-                return new EmptyResponse(404);
+                return static::createResponseFromTemplate($container, Views::DISTRIBUTABLE, 404);
             default:
                 return $response;
         }

@@ -1,6 +1,8 @@
-<?php namespace App\Api;
+<?php declare (strict_types=1);
 
-use App\Authorization\UserRules;
+namespace App\Api;
+
+use App\Authorization\UserRules as Rules;
 use App\Data\Models\RoleScope;
 use App\Data\Models\User as Model;
 use App\Json\Schemas\UserSchema as Schema;
@@ -37,7 +39,7 @@ class UsersApi extends BaseApi
      */
     public function create(?string $index, iterable $attributes, iterable $toMany): string
     {
-        $this->authorize(UserRules::ACTION_MANAGE_USERS, Schema::TYPE);
+        $this->authorize(Rules::ACTION_CREATE_USER, Schema::TYPE);
 
         return parent::create($index, $this->getReplacePasswordWithHash($attributes), $toMany);
     }
@@ -47,9 +49,9 @@ class UsersApi extends BaseApi
      *
      * @throws AuthorizationExceptionInterface
      */
-    public function update(string $index, array $attributes, array $toMany): int
+    public function update(?string $index, array $attributes, array $toMany): int
     {
-        $this->authorize(UserRules::ACTION_MANAGE_USERS, Schema::TYPE, $index);
+        $this->authorize(Rules::ACTION_EDIT_USER, Schema::TYPE, $index);
 
         return parent::update($index, $this->getReplacePasswordWithHash($attributes), $toMany);
     }
@@ -59,9 +61,9 @@ class UsersApi extends BaseApi
      *
      * @throws AuthorizationExceptionInterface
      */
-    public function remove(string $index): bool
+    public function remove(?string $index): bool
     {
-        $this->authorize(UserRules::ACTION_MANAGE_USERS, Schema::TYPE, $index);
+        $this->authorize(Rules::ACTION_EDIT_USER, Schema::TYPE, $index);
 
         return parent::remove($index);
     }
@@ -73,7 +75,7 @@ class UsersApi extends BaseApi
      */
     public function index(): PaginatedDataInterface
     {
-        $this->authorize(UserRules::ACTION_VIEW_USERS, Schema::TYPE);
+        $this->authorize(Rules::ACTION_VIEW_USERS, Schema::TYPE);
 
         return parent::index();
     }
@@ -83,11 +85,32 @@ class UsersApi extends BaseApi
      *
      * @throws AuthorizationExceptionInterface
      */
-    public function read(string $index)
+    public function read(?string $index)
     {
-        $this->authorize(UserRules::ACTION_VIEW_USERS, Schema::TYPE, $index);
+        $this->authorize(Rules::ACTION_VIEW_USERS, Schema::TYPE, $index);
 
         return parent::read($index);
+    }
+
+    /**
+     * @param string|int    $index
+     * @param iterable|null $relationshipFilters
+     * @param iterable|null $relationshipSorts
+     *
+     * @return PaginatedDataInterface
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws AuthorizationExceptionInterface
+     */
+    public function readRole(
+        $index,
+        iterable $relationshipFilters = null,
+        iterable $relationshipSorts = null
+    ): PaginatedDataInterface
+    {
+        $this->authorize(Rules::ACTION_VIEW_ROLE, Schema::TYPE, $index);
+
+        return $this->readRelationshipInt($index, Model::REL_ROLE, $relationshipFilters, $relationshipSorts);
     }
 
     /**
@@ -126,8 +149,8 @@ class UsersApi extends BaseApi
     public function noAuthReadUserIdByEmail(string $email): ?int
     {
         /** @var Connection $connection */
-        $connection  = $this->getContainer()->get(Connection::class);
-        $query       = $connection->createQueryBuilder();
+        $connection = $this->getContainer()->get(Connection::class);
+        $query      = $connection->createQueryBuilder();
         $query
             ->select(Model::FIELD_ID)
             ->from(Model::TABLE_NAME)
@@ -151,7 +174,7 @@ class UsersApi extends BaseApi
         $hash = $this->createHasher()->hash($newPassword);
 
         try {
-            $changed = parent::update($userId, [Model::FIELD_PASSWORD_HASH => $hash], []);
+            $changed = parent::update((string)$userId, [Model::FIELD_PASSWORD_HASH => $hash], []);
 
             return $changed > 0;
         } catch (DBALException $exception) {

@@ -1,4 +1,6 @@
-<?php namespace App\Json\Schemas;
+<?php declare (strict_types=1);
+
+namespace App\Json\Schemas;
 
 use Limoncello\Common\Reflection\ClassIsTrait;
 use Limoncello\Contracts\Application\ModelInterface;
@@ -10,6 +12,9 @@ use Limoncello\Flute\Schema\Schema;
 abstract class BaseSchema extends Schema
 {
     use ClassIsTrait;
+
+    /** Attribute name */
+    const ATTR_UUID = 'uuid';
 
     /** Attribute name */
     const ATTR_CREATED_AT = 'created-at';
@@ -35,6 +40,6 @@ abstract class BaseSchema extends Schema
 
         $pkName = $modelClass::getPrimaryKeyName();
 
-        return $resource->{$pkName};
+        return (string)$resource->{$pkName};
     }
 }

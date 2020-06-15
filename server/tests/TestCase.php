@@ -1,9 +1,12 @@
-<?php namespace Tests;
+<?php declare (strict_types=1);
+
+namespace Tests;
 
 use App\Application;
 use Closure;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ConnectionException;
+use Laminas\HttpHandlerRunner\Emitter\EmitterInterface;
 use Limoncello\Application\Contracts\Cookie\CookieFunctionsInterface;
 use Limoncello\Application\Contracts\Csrf\CsrfTokenStorageInterface;
 use Limoncello\Application\Contracts\Session\SessionFunctionsInterface;
@@ -21,7 +24,6 @@ use Limoncello\Testing\TestCaseTrait;
 use LogicException;
 use Mockery;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
-use Zend\HttpHandlerRunner\Emitter\EmitterInterface;
 
 /**
  * @package Tests
@@ -215,8 +217,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
      */
     protected function createApplication(): ApplicationInterface
     {
-        $wrapper = new class extends Application implements ApplicationWrapperInterface
-        {
+        $wrapper = new class extends Application implements ApplicationWrapperInterface {
             use ApplicationWrapperTrait;
         };
 
@@ -250,7 +251,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
         array $files = null,
         $messageBody = 'php://input',
         string $protocolVersion = '1.1'
-    ): Sapi {
+    ): Sapi
+    {
         /** @var EmitterInterface $emitter */
         $emitter = Mockery::mock(EmitterInterface::class);
 

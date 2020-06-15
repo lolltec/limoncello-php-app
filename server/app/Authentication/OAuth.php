@@ -1,4 +1,6 @@
-<?php namespace App\Authentication;
+<?php declare (strict_types=1);
+
+namespace App\Authentication;
 
 use App\Api\UsersApi;
 use App\Data\Models\User;
@@ -119,7 +121,8 @@ final class OAuth
         /** @var UsersApi $usersApi */
         $usersApi = $factory->createApi(UsersApi::class);
 
-        $builder = $usersApi->shouldBeUntyped()->withIndexFilter($userId)->createIndexBuilder([
+        $builder = $usersApi->shouldBeUntyped()->withIndexFilter((string)$userId)->createIndexBuilder([
+            User::FIELD_UUID,
             User::FIELD_EMAIL,
             User::FIELD_FIRST_NAME,
             User::FIELD_LAST_NAME,
@@ -128,10 +131,11 @@ final class OAuth
         $user = $usersApi->fetchRow($builder, User::class);
 
         return [
-            User::FIELD_ID         => $userId,
-            User::FIELD_EMAIL      => $user[User::FIELD_EMAIL],
-            User::FIELD_FIRST_NAME => $user[User::FIELD_FIRST_NAME],
-            User::FIELD_LAST_NAME  => $user[User::FIELD_LAST_NAME],
+            User::FIELD_UUID => $user[User::FIELD_UUID],
+            //User::FIELD_ID         => $userId,
+            //User::FIELD_EMAIL      => $user[User::FIELD_EMAIL],
+            //User::FIELD_FIRST_NAME => $user[User::FIELD_FIRST_NAME],
+            //User::FIELD_LAST_NAME  => $user[User::FIELD_LAST_NAME],
         ];
     }
 }

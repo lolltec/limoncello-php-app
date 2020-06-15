@@ -1,4 +1,6 @@
-<?php namespace Settings;
+<?php declare (strict_types=1);
+
+namespace Settings;
 
 use Dotenv\Dotenv;
 use Limoncello\Contracts\Application\ApplicationConfigurationInterface;
@@ -51,7 +53,6 @@ class Application implements ApplicationConfigurationInterface
             static::KEY_PROVIDER_CLASSES             => [
                 \Limoncello\Application\Packages\Application\ApplicationProvider::class,
                 \Limoncello\Application\Packages\Authorization\AuthorizationProvider::class,
-                //\Limoncello\Application\Packages\PDO\PdoProvider::class,
                 \Limoncello\Application\Packages\Cookies\CookieProvider::class,
                 \Limoncello\Application\Packages\Cors\CorsProvider::class,
                 \Limoncello\Application\Packages\Csrf\CsrfMinimalProvider::class,
@@ -59,13 +60,9 @@ class Application implements ApplicationConfigurationInterface
                 \Limoncello\Application\Packages\L10n\L10nProvider::class,
                 \Limoncello\Application\Packages\Monolog\MonologFileProvider::class,
                 \Limoncello\Application\Packages\FileSystem\FileSystemProvider::class,
-                //\Limoncello\Application\Packages\Session\SessionProvider::class,
+                \Limoncello\Application\Packages\Session\SessionProvider::class,
                 \Limoncello\Crypt\Package\HasherProvider::class,
-                //\Limoncello\Crypt\Package\SymmetricCryptProvider::class,
-                //\Limoncello\Crypt\Package\AsymmetricPublicEncryptPrivateDecryptProvider::class,
-                //\Limoncello\Crypt\Package\AsymmetricPrivateEncryptPublicDecryptProvider::class,
-                //\Limoncello\Events\Package\EventProvider::class,
-                \Limoncello\Flute\Package\FluteProvider::class,
+                \Lolltec\Limoncello\Flute\Package\FluteProvider::class,
                 \Limoncello\Passport\Package\PassportProvider::class,
                 \Limoncello\Templates\Package\TwigTemplatesProvider::class,
             ],

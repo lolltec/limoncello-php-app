@@ -1,9 +1,13 @@
-<?php namespace Tests\Json;
+<?php declare (strict_types=1);
+
+namespace Tests\Json;
 
 use App\Data\Models\Role;
 use App\Data\Seeds\RolesSeed;
+use App\Data\Seeds\UsersSeed;
 use App\Json\Schemas\RoleSchema;
 use Limoncello\Testing\JsonApiCallsTrait;
+use Tests\OAuthSignInTrait;
 use Tests\TestCase;
 
 /**
@@ -23,6 +27,7 @@ class RoleApiTest extends TestCase
         $this->setPreventCommits();
 
         $response = $this->get(self::API_URI, [], $this->getModeratorOAuthHeader());
+        $token = $this->getOAuthToken(UsersSeed::USER_MODERATOR, UsersSeed::DEFAULT_PASSWORD);
         $this->assertEquals(200, $response->getStatusCode());
 
         $json = json_decode((string)$response->getBody());
@@ -54,13 +59,16 @@ class RoleApiTest extends TestCase
     {
         $this->setPreventCommits();
 
-        $roleId   = RolesSeed::ROLE_USER;
+        $roleId   = RolesSeed::ROLE_ADMINISTRATOR;
         $response = $this->get(self::API_URI . "/$roleId/users", [], $this->getModeratorOAuthHeader());
         $this->assertEquals(200, $response->getStatusCode());
 
         $json = json_decode((string)$response->getBody());
         $this->assertObjectHasAttribute('data', $json);
-        $this->assertCount(4, $json->data);
+        $this->assertCount(1, $json->data);
+
+        $relationship = $json->data[0];
+        $this->assertEquals(1, $relationship->id);
     }
 
     /**
@@ -70,19 +78,18 @@ class RoleApiTest extends TestCase
     {
         $this->setPreventCommits();
 
-        $description = "New role";
+        $name = "New role";
         $jsonInput   = <<<EOT
         {
             "data" : {
                 "type"  : "roles",
-                "id"    : "new_role",
                 "attributes" : {
-                    "description"  : "$description"
+                    "name"  : "$name"
                 }
             }
         }
 EOT;
-        $headers  = $this->getAdminOAuthHeader();
+        $headers     = $this->getAdminOAuthHeader();
 
         $response = $this->postJsonApi(self::API_URI, $jsonInput, $headers);
         $this->assertEquals(201, $response->getStatusCode());
@@ -124,7 +131,7 @@ EOT;
             }
         }
 EOT;
-        $headers  = $this->getAdminOAuthHeader();
+        $headers     = $this->getAdminOAuthHeader();
 
         $response = $this->patchJsonApi(self::API_URI . "/$index", $jsonInput, $headers);
         $this->assertEquals(200, $response->getStatusCode());

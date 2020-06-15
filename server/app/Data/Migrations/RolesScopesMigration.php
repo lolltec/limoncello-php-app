@@ -1,14 +1,16 @@
-<?php namespace App\Data\Migrations;
+<?php declare (strict_types=1);
+
+namespace App\Data\Migrations;
 
 use App\Data\Models\Role;
 use App\Data\Models\RoleScope as Model;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Types\Type;
 use Limoncello\Contracts\Data\MigrationInterface;
-use Limoncello\Data\Migrations\MigrationTrait;
 use Limoncello\Data\Migrations\RelationshipRestrictions;
 use Limoncello\Passport\Entities\DatabaseSchema;
 use Limoncello\Passport\Entities\Scope;
+use Lolltec\Limoncello\Data\Migrations\MigrationTrait;
 
 /**
  * @package App
@@ -32,7 +34,7 @@ class RolesScopesMigration implements MigrationInterface
                 DatabaseSchema::TABLE_SCOPES,
                 Scope::FIELD_ID,
                 Type::STRING,
-                true
+                255
             ),
             $this->timestamps(),
         ]);

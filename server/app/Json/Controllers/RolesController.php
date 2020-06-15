@@ -1,11 +1,13 @@
-<?php namespace App\Json\Controllers;
+<?php declare (strict_types=1);
+
+namespace App\Json\Controllers;
 
 use App\Api\RolesApi as Api;
 use App\Data\Models\Role as Model;
 use App\Json\Schemas\RoleSchema as Schema;
-use App\Validation\Role\RoleCreateJson;
-use App\Validation\Role\RolesReadQuery;
-use App\Validation\Role\RoleUpdateJson;
+use App\Validation\Role\RoleCreateJson as CreateJson;
+use App\Validation\Role\RolesReadQuery as ReadQuery;
+use App\Validation\Role\RoleUpdateJson as UpdateJson;
 use Limoncello\Flute\Validation\JsonApi\Rules\DefaultQueryValidationRules;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -27,16 +29,16 @@ class RolesController extends BaseController
     const SCHEMA_CLASS = Schema::class;
 
     /** @inheritdoc */
-    const ON_CREATE_DATA_VALIDATION_RULES_CLASS = RoleCreateJson::class;
+    const ON_CREATE_DATA_VALIDATION_RULES_CLASS = CreateJson::class;
 
     /** @inheritdoc */
-    const ON_UPDATE_DATA_VALIDATION_RULES_CLASS = RoleUpdateJson::class;
+    const ON_UPDATE_DATA_VALIDATION_RULES_CLASS = UpdateJson::class;
 
     /** @inheritdoc */
-    const ON_INDEX_QUERY_VALIDATION_RULES_CLASS = RolesReadQuery::class;
+    const ON_INDEX_QUERY_VALIDATION_RULES_CLASS = ReadQuery::class;
 
     /** @inheritdoc */
-    const ON_READ_QUERY_VALIDATION_RULES_CLASS = RolesReadQuery::class;
+    const ON_READ_QUERY_VALIDATION_RULES_CLASS = ReadQuery::class;
 
     /**
      * @param array                  $routeParams
@@ -52,7 +54,8 @@ class RolesController extends BaseController
         array $routeParams,
         ContainerInterface $container,
         ServerRequestInterface $request
-    ): ResponseInterface {
+    ): ResponseInterface
+    {
         return static::readRelationship(
             $routeParams[static::ROUTE_KEY_INDEX],
             Model::REL_USERS,

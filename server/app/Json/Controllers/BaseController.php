@@ -1,6 +1,8 @@
-<?php namespace App\Json\Controllers;
+<?php declare (strict_types=1);
 
-use Limoncello\Flute\Http\JsonApiBaseController;
+namespace App\Json\Controllers;
+
+use Lolltec\Limoncello\Flute\Http\JsonApiBaseController;
 
 /**
  * @package App

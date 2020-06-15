@@ -1,4 +1,6 @@
-<?php namespace App\Validation;
+<?php declare (strict_types=1);
+
+namespace App\Validation;
 
 use Limoncello\Flute\Contracts\Validation\ErrorCodes as BaseErrorCodes;
 

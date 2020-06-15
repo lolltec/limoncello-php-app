@@ -1,4 +1,6 @@
-<?php namespace App\Routes;
+<?php declare (strict_types=1);
+
+namespace App\Routes;
 
 use App\Commands\Middleware\CliAuthenticationMiddleware;
 use App\Container\CliCommandsConfigurator;
@@ -21,7 +23,7 @@ class CliRoutes implements RoutesConfiguratorInterface
         $routes
             ->addGlobalContainerConfigurators([
                 CliCommandsConfigurator::CONFIGURATOR,
-                ])
+            ])
             ->addCommandMiddleware(DataCommand::NAME, [CliAuthenticationMiddleware::CALLABLE_HANDLER]);
     }
 }

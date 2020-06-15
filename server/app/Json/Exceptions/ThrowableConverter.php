@@ -1,4 +1,6 @@
-<?php namespace App\Json\Exceptions;
+<?php declare (strict_types=1);
+
+namespace App\Json\Exceptions;
 
 use Limoncello\Application\Exceptions\AuthorizationException;
 use Limoncello\Flute\Contracts\Exceptions\JsonApiThrowableConverterInterface;
@@ -49,6 +51,6 @@ class ThrowableConverter implements JsonApiThrowableConverterInterface
      */
     private static function createErrorWith(string $title, string $detail, int $httpCode): ErrorCollection
     {
-        return (new ErrorCollection())->addDataError($title, $detail, null, null, null, null, $httpCode);
+        return (new ErrorCollection())->addDataError($title, $detail, null, null, null, null, (string)$httpCode);
     }
 }

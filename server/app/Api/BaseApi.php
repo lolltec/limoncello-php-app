@@ -1,4 +1,6 @@
-<?php namespace App\Api;
+<?php declare (strict_types=1);
+
+namespace App\Api;
 
 use App\Data\Models\CommonFields;
 use DateTimeImmutable;
@@ -15,6 +17,7 @@ use Limoncello\Flute\Api\Crud;
 use Limoncello\Flute\Contracts\Models\PaginatedDataInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Ramsey\Uuid\UuidFactoryInterface;
 
 /**
  * @package App
@@ -36,7 +39,8 @@ abstract class BaseApi extends Crud
         string $name,
         iterable $relationshipFilters = null,
         iterable $relationshipSorts = null
-    ): PaginatedDataInterface {
+    ): PaginatedDataInterface
+    {
         return parent::readRelationship($index, $name, $relationshipFilters, $relationshipSorts);
     }
 
@@ -67,7 +71,15 @@ abstract class BaseApi extends Crud
      */
     protected function builderSaveResourceOnCreate(ModelQueryBuilder $builder): ModelQueryBuilder
     {
-        return $this->addCreatedAt(parent::builderSaveResourceOnCreate($builder));
+        $this->addCreatedAt(parent::builderSaveResourceOnCreate($builder));
+
+        $knownAttrAndTypes = $this->getModelSchemas()->getAttributeTypes($this->getModelClass());
+
+        if (array_key_exists(CommonFields::FIELD_UUID, $knownAttrAndTypes)) {
+            $this->addUuid($builder);
+        }
+
+        return $builder;
     }
 
     /**
@@ -98,6 +110,22 @@ abstract class BaseApi extends Crud
     protected function builderSaveRelationshipOnUpdate($relationshipName, ModelQueryBuilder $builder): ModelQueryBuilder
     {
         return $this->addCreatedAt(parent::builderSaveRelationshipOnUpdate($relationshipName, $builder));
+    }
+
+    /**
+     * @param ModelQueryBuilder $builder
+     *
+     * @return ModelQueryBuilder
+     */
+    protected function addUuid(ModelQueryBuilder $builder): ModelQueryBuilder
+    {
+        /** @var UuidFactoryInterface $uuidFactory */
+        $uuidFactory = $this->getContainer()->get(UuidFactoryInterface::class);
+        $uuid        = $uuidFactory->uuid4()->toString();
+
+        $builder->setValue(CommonFields::FIELD_UUID, $builder->createNamedParameter($uuid));
+
+        return $builder;
     }
 
     /**

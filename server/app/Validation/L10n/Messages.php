@@ -1,4 +1,6 @@
-<?php namespace App\Validation\L10n;
+<?php declare (strict_types=1);
+
+namespace App\Validation\L10n;
 
 /**
  * @package App
