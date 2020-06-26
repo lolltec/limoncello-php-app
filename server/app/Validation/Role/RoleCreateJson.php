@@ -37,7 +37,7 @@ final class RoleCreateJson implements JsonApiDataRulesInterface
     {
         return [
             Schema::ATTR_NAME        => r::required(r::name()),
-            Schema::ATTR_DESCRIPTION => r::nullable(r::asText()),
+            Schema::ATTR_DESCRIPTION => r::asText(),
         ];
     }
 

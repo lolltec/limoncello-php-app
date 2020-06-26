@@ -37,7 +37,7 @@ final class RoleUpdateJson implements JsonApiDataRulesInterface
     {
         return [
             Schema::ATTR_NAME        => r::name(true),
-            Schema::ATTR_DESCRIPTION => r::nullable(r::asText()),
+            Schema::ATTR_DESCRIPTION => r::asText(),
         ];
     }
 
