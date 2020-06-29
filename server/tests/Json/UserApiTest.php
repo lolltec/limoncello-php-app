@@ -2,10 +2,10 @@
 
 namespace Tests\Json;
 
-use App\Data\Models\User;
+use App\Data\Models\User as Model;
 use App\Data\Seeds\RolesSeed;
-use App\Data\Seeds\UsersSeed;
-use App\Json\Schemas\UserSchema;
+use App\Data\Seeds\UsersSeed as Seed;
+use App\Json\Schemas\UserSchema as Schema;
 use Limoncello\Contracts\Http\ThrowableResponseInterface;
 use Limoncello\Testing\JsonApiCallsTrait;
 use Neomerx\JsonApi\Exceptions\JsonApiException;
@@ -18,7 +18,7 @@ class UserApiTest extends TestCase
 {
     use JsonApiCallsTrait;
 
-    const API_URI = '/api/v1/' . UserSchema::TYPE;
+    const API_URI = '/api/v1/' . Schema::TYPE;
 
     /**
      * Test User's API.
@@ -101,7 +101,7 @@ class UserApiTest extends TestCase
         $json = json_decode((string)$response->getBody());
         $this->assertObjectHasAttribute('data', $json);
         $this->assertEquals($userId, $json->data->id);
-        $this->assertEquals(UserSchema::TYPE, $json->data->type);
+        $this->assertEquals(Schema::TYPE, $json->data->type);
     }
 
     /**
@@ -129,7 +129,7 @@ class UserApiTest extends TestCase
         $this->setPreventCommits();
 
         $role      = RolesSeed::ROLE_USER;
-        $password  = UsersSeed::DEFAULT_PASSWORD;
+        $password  = Seed::DEFAULT_PASSWORD;
         $email     = "john@dow.foo";
         $jsonInput = <<<EOT
         {
@@ -165,8 +165,8 @@ EOT;
         $query     = $this->getCapturedConnection()->createQueryBuilder();
         $statement = $query
             ->select('*')
-            ->from(User::TABLE_NAME)
-            ->where(User::FIELD_ID . '=' . $query->createPositionalParameter($userId))
+            ->from(Model::TABLE_NAME)
+            ->where(Model::FIELD_ID . '=' . $query->createPositionalParameter($userId))
             ->execute();
         $this->assertNotEmpty($statement->fetch());
     }
@@ -255,14 +255,14 @@ EOT;
         $query     = $this->getCapturedConnection()->createQueryBuilder();
         $statement = $query
             ->select('*')
-            ->from(User::TABLE_NAME)
-            ->where(User::FIELD_ID . '=' . $query->createPositionalParameter($userId))
+            ->from(Model::TABLE_NAME)
+            ->where(Model::FIELD_ID . '=' . $query->createPositionalParameter($userId))
             ->execute();
         $this->assertNotEmpty($values = $statement->fetch());
-        $this->assertEquals('John', $values[User::FIELD_FIRST_NAME]);
-        $this->assertEquals('Dow', $values[User::FIELD_LAST_NAME]);
-        $this->assertNotEmpty($values[User::FIELD_UPDATED_AT]);
-        $this->assertEquals(RolesSeed::ROLE_ADMINISTRATOR, $values[User::FIELD_ID_ROLE]);
+        $this->assertEquals('John', $values[Model::FIELD_FIRST_NAME]);
+        $this->assertEquals('Dow', $values[Model::FIELD_LAST_NAME]);
+        $this->assertNotEmpty($values[Model::FIELD_UPDATED_AT]);
+        $this->assertEquals(RolesSeed::ROLE_ADMINISTRATOR, $values[Model::FIELD_ID_ROLE]);
     }
 
     /**

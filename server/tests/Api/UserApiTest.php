@@ -2,9 +2,9 @@
 
 namespace Tests\Api;
 
-use App\Api\UsersApi;
-use App\Data\Models\User;
-use App\Data\Seeds\UsersSeed;
+use App\Api\UsersApi as Api;
+use App\Data\Models\User as Model;
+use App\Data\Seeds\UsersSeed as Seed;
 use Doctrine\DBAL\DBALException;
 use Limoncello\Contracts\Exceptions\AuthorizationExceptionInterface;
 use Tests\TestCase;
@@ -24,13 +24,13 @@ class UserApiTest extends TestCase
 
         // create API
 
-        /** @var UsersApi $api */
+        /** @var Api $api */
         $api = $this->createUsersApi();
 
         // Call and check any method from low level API.
 
         /** Default seed data. Manually checked. */
-        $this->assertEquals(1, $api->noAuthReadUserIdByEmail(UsersSeed::USER_ADMINISTRATOR));
+        $this->assertEquals(1, $api->noAuthReadUserIdByEmail(Seed::USER_ADMINISTRATOR));
     }
 
     /**
@@ -55,16 +55,16 @@ class UserApiTest extends TestCase
         $before = $api->read((string)$userId);
         $this->assertTrue($noAuthApi->noAuthResetPassword($userId, 'new password'));
         $after = $api->read((string)$userId);
-        $this->assertNotEquals($before->{User::FIELD_PASSWORD_HASH}, $after->{User::FIELD_PASSWORD_HASH});
+        $this->assertNotEquals($before->{Model::FIELD_PASSWORD_HASH}, $after->{Model::FIELD_PASSWORD_HASH});
     }
 
     /**
-     * @return UsersApi
+     * @return Api
      */
-    private function createUsersApi(): UsersApi
+    private function createUsersApi(): Api
     {
-        $api = $this->createApi(UsersApi::class);
-        assert($api instanceof UsersApi);
+        $api = $this->createApi(Api::class);
+        assert($api instanceof Api);
 
         return $api;
     }
