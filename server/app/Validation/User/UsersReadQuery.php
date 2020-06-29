@@ -72,12 +72,12 @@ class UsersReadQuery implements JsonApiQueryRulesInterface
     {
         return r::isString(r::inValues([
             Schema::RESOURCE_ID,
+            Schema::ATTR_EMAIL,
             Schema::ATTR_FIRST_NAME,
             Schema::ATTR_LAST_NAME,
             Schema::ATTR_CREATED_AT,
             Schema::ATTR_UPDATED_AT,
             Schema::REL_ROLE,
-            Schema::REL_ROLE . '.' . RoleSchema::ATTR_UUID,
             Schema::REL_ROLE . '.' . RoleSchema::ATTR_NAME,
         ]));
     }
