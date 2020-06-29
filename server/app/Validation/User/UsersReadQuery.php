@@ -52,6 +52,8 @@ class UsersReadQuery implements JsonApiQueryRulesInterface
             // if fields sets are given only the following fields are OK
             Schema::TYPE     => r::inValues([
                 Schema::RESOURCE_ID,
+                Schema::ATTR_UUID,
+                Schema::ATTR_EMAIL,
                 Schema::ATTR_FIRST_NAME,
                 Schema::ATTR_LAST_NAME,
                 Schema::ATTR_CREATED_AT,

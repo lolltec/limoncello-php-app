@@ -49,6 +49,9 @@ class RolesReadQuery implements JsonApiQueryRulesInterface
     {
         return [
             Schema::TYPE     => r::inValues([
+                Schema::RESOURCE_ID,
+                Schema::ATTR_UUID,
+                Schema::ATTR_NAME,
                 Schema::ATTR_DESCRIPTION,
                 Schema::ATTR_CREATED_AT,
                 Schema::ATTR_UPDATED_AT,
