@@ -119,6 +119,9 @@ class UserApiTest extends TestCase
 
         // delete
         $this->assertEquals(204, $this->delete(self::API_URI . "/$userId", [], $headers)->getStatusCode());
+
+        // check user do not exist
+        $this->assertEquals(404, $this->get(self::API_URI . "/$userId", [], $headers)->getStatusCode());
     }
 
     /**
