@@ -39,24 +39,24 @@ class RolesSeed implements SeedInterface
      */
     public function run(): void
     {
-        /** @var UuidFactoryInterface $uuid */
-        $uuid = $this->getContainer()->get(UuidFactoryInterface::class);
+        /** @var UuidFactoryInterface $uuidFactory */
+        $uuidFactory = $this->getContainer()->get(UuidFactoryInterface::class);
 
         $this->seedModelData(Model::class, [
             Model::FIELD_ID         => self::ROLE_ADMINISTRATOR,
-            Model::FIELD_UUID       => $uuid->uuid4()->toString(),
+            Model::FIELD_UUID       => $uuidFactory->uuid4()->toString(),
             Model::FIELD_NAME       => self::NAME_ADMINISTRATOR,
             Model::FIELD_CREATED_AT => $this->now(),
         ]);
         $this->seedModelData(Model::class, [
             Model::FIELD_ID         => self::ROLE_MODERATOR,
-            Model::FIELD_UUID       => $uuid->uuid4()->toString(),
+            Model::FIELD_UUID       => $uuidFactory->uuid4()->toString(),
             Model::FIELD_NAME       => self::NAME_MODERATOR,
             Model::FIELD_CREATED_AT => $this->now(),
         ]);
         $this->seedModelData(Model::class, [
             Model::FIELD_ID         => self::ROLE_USER,
-            Model::FIELD_UUID       => $uuid->uuid4()->toString(),
+            Model::FIELD_UUID       => $uuidFactory->uuid4()->toString(),
             Model::FIELD_NAME       => self::NAME_USER,
             Model::FIELD_CREATED_AT => $this->now(),
         ]);

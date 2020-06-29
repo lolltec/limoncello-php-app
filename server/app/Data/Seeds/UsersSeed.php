@@ -41,15 +41,15 @@ class UsersSeed implements SeedInterface
      */
     public function run(): void
     {
-        /** @var HasherInterface $uuid */
+        /** @var HasherInterface $uuidFactory */
         /** @var UuidFactoryInterface $uuid */
-        $uuid   = $this->getContainer()->get(UuidFactoryInterface::class);
-        $hasher = $this->getContainer()->get(HasherInterface::class);
+        $uuidFactory = $this->getContainer()->get(UuidFactoryInterface::class);
+        $hasher      = $this->getContainer()->get(HasherInterface::class);
 
         $this->seedModelData(Model::class, [
             Model::FIELD_ID            => self::ID_ADMINISTRATOR,
             Model::FIELD_ID_ROLE       => RolesSeed::ROLE_ADMINISTRATOR,
-            Model::FIELD_UUID          => $uuid->uuid4()->toString(),
+            Model::FIELD_UUID          => $uuidFactory->uuid4()->toString(),
             Model::FIELD_EMAIL         => self::USER_ADMINISTRATOR,
             Model::FIELD_PASSWORD_HASH => $hasher->hash(self::DEFAULT_PASSWORD),
             Model::FIELD_CREATED_AT    => $this->now(),
@@ -58,7 +58,7 @@ class UsersSeed implements SeedInterface
         $this->seedModelData(Model::class, [
             Model::FIELD_ID            => self::ID_MODERATOR,
             Model::FIELD_ID_ROLE       => RolesSeed::ROLE_MODERATOR,
-            Model::FIELD_UUID          => $uuid->uuid4()->toString(),
+            Model::FIELD_UUID          => $uuidFactory->uuid4()->toString(),
             Model::FIELD_EMAIL         => self::USER_MODERATOR,
             Model::FIELD_PASSWORD_HASH => $hasher->hash(self::DEFAULT_PASSWORD),
             Model::FIELD_CREATED_AT    => $this->now(),
@@ -67,7 +67,7 @@ class UsersSeed implements SeedInterface
         $this->seedModelData(Model::class, [
             Model::FIELD_ID            => self::ID_USER,
             Model::FIELD_ID_ROLE       => RolesSeed::ROLE_USER,
-            Model::FIELD_UUID          => $uuid->uuid4()->toString(),
+            Model::FIELD_UUID          => $uuidFactory->uuid4()->toString(),
             Model::FIELD_EMAIL         => self::USER_USER,
             Model::FIELD_PASSWORD_HASH => $hasher->hash(self::DEFAULT_PASSWORD),
             Model::FIELD_CREATED_AT    => $this->now(),
