@@ -1,6 +1,6 @@
-server/storage/*.sqlite
-server/storage/*.png
-server/storage/*.jpg
+server/storage/**/*.sqlite
+server/storage/**/*.png
+server/storage/**/*.jpg
 .idea/
 node_modules/
 vendor/
@@ -10,3 +10,4 @@ package-lock.json
 yarn.lock
 yarn-error.log
 public/dist
+server/app/Data/Seeds/**/*.sql
